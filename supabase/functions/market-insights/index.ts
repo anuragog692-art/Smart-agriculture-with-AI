@@ -1,0 +1,179 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
+
+const languageNames: Record<string, string> = {
+  en: "English",
+  te: "Telugu",
+  hi: "Hindi",
+  ta: "Tamil",
+  kn: "Kannada",
+  mr: "Marathi",
+};
+
+async function requireAuthenticatedUser(req: Request) {
+  const authHeader = req.headers.get("Authorization") || "";
+  if (!authHeader.startsWith("Bearer ")) return null;
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Authentication service is not configured");
+    return null;
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { headers: { Authorization: authHeader } },
+  });
+
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) return null;
+  return data.user;
+}
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const user = await requireAuthenticatedUser(req);
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return new Response(JSON.stringify({ error: "Invalid request body" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const sanitize = (v: unknown, max = 200) =>
+      typeof v === "string" ? v.replace(/[\r\n]+/g, " ").trim().slice(0, max) : "";
+    const crop = sanitize((body as any).crop, 100);
+    const location = sanitize((body as any).location, 200);
+    const timeframe = sanitize((body as any).timeframe, 100);
+    const rawLang = sanitize((body as any).language, 5) || "en";
+    const allowedLangs = ["en", "te", "hi", "ta", "kn", "mr"];
+    const language = allowedLangs.includes(rawLang) ? rawLang : "en";
+
+    if (!crop || !location) {
+      return new Response(JSON.stringify({ error: "Crop and location are required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      console.error("LOVABLE_API_KEY not configured");
+      return new Response(JSON.stringify({ error: "Service temporarily unavailable" }), {
+        status: 503,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const languageName = languageNames[language] || "English";
+
+    const systemPrompt = `You are AgriPath AI, an agricultural market advisor powered by LLaMA.
+
+CRITICAL INSTRUCTION:
+The entire response must be in ${languageName} language ONLY.
+Do NOT mix languages under any condition.
+Use simple, farmer-friendly words suitable for rural users.
+
+Input Context:
+- Crop Name: ${crop}
+- Location: ${location}
+- Timeframe: ${timeframe || 'Current season'}
+
+Your Tasks:
+1. Analyze current market trends
+2. Provide price ranges in Indian Rupees (₹)
+3. Advise whether to sell now or wait
+4. Suggest the best nearby mandis/markets
+5. Give simple tips to maximize profit
+6. Include storage recommendations
+7. Mention transportation considerations
+
+Guidelines:
+- Use realistic price ranges based on typical Indian mandi rates
+- Be helpful and practical
+- Consider seasonal variations
+- Include government MSP (Minimum Support Price) when applicable
+- Suggest ways to get better prices
+- RESPOND ONLY IN ${languageName.toUpperCase()} LANGUAGE.`;
+
+    console.log("Market insights request:", { crop, location, timeframe, language });
+
+    const userPrompt = `Provide market insights for:
+- Crop Name: ${crop}
+- Location/State: ${location}
+- Timeframe: ${timeframe || 'Current season'}
+
+Tasks:
+1. Analyze current market trends
+2. Advise whether to sell now or wait
+3. Suggest the best nearby market/mandi
+4. Give simple tips to maximize profit
+5. Include storage and transportation recommendations
+
+IMPORTANT: Respond ONLY in ${languageName} language.`;
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        stream: true,
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limits exceeded, please try again later." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "Payment required, please add credits." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const text = await response.text();
+      console.error("AI gateway error:", response.status, text);
+      return new Response(JSON.stringify({ error: "AI gateway error" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(response.body, {
+      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+    });
+  } catch (error) {
+    console.error("Market insights error:", error);
+    return new Response(JSON.stringify({ error: "An error occurred processing your request. Please try again." }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+});

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farm to Field Hub — Developed by Anurag</title>
+    <meta name="description" content="Farm to Field Hub: Smart technology connecting farmers, crops, markets and agricultural insights. Created and developed by Anurag." />
+    <meta name="author" content="Anurag" />
+    <meta name="creator" content="Anurag" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Urbanist:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <meta property="og:title" content="Farm to Field Hub — Developed by Anurag" />
+    <meta property="og:description" content="Smart technology connecting farmers, crops, markets and agricultural insights. Developed by Anurag." />
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Farm to Field Hub — Developed by Anurag" />
+    <meta name="twitter:description" content="Smart technology connecting farmers, crops, markets and agricultural insights. Developed by Anurag." />
+
+    <!-- Style to prevent any Lovable watermark/badge from appearing -->
+    <style>
+      #lovable-badge,
+      [id*="lovable-badge"],
+      aside[aria-label*="Lovable"],
+      aside[aria-label*="Edit with Lovable"],
+      a[href*="lovable.dev"],
+      .lovable-badge {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        position: absolute !important;
+        z-index: -99999 !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <script>
+      // Automatically remove any Lovable watermark badge element
+      (function() {
+        function removeLovableElements() {
+          const badges = document.querySelectorAll('#lovable-badge, [id*="lovable-badge"], aside[aria-label*="Lovable"], a[href*="lovable.dev"]');
+          badges.forEach(function(el) {
+            el.remove();
+          });
+        }
+        removeLovableElements();
+        document.addEventListener('DOMContentLoaded', removeLovableElements);
+        window.addEventListener('load', removeLovableElements);
+        const observer = new MutationObserver(function() {
+          removeLovableElements();
+        });
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+      })();
+    </script>
+
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
