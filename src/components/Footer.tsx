@@ -1,136 +1,100 @@
-import { Sprout, Heart, Shield, Sparkles, Leaf, ArrowUpRight } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import React from 'react';
+import { Box, Sparkles, Activity, ShieldAlert, ArrowUp } from 'lucide-react';
 
-const Footer = () => {
-  const { t } = useLanguage();
+export const Footer: React.FC = () => {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
-    <footer id="about" className="relative pt-20 pb-12 bg-emerald-950/80 border-t border-emerald-500/20 overflow-hidden">
-      {/* Background ambient lighting */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+    <footer className="bg-navy-950 border-t border-slate-800 text-slate-400 font-mono text-xs py-16 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
 
-      <div className="container relative z-10 mx-auto px-4 md:px-8 max-w-7xl">
-        {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-16">
-          {/* Brand Col */}
-          <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-amber-500 p-0.5 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                <div className="w-full h-full bg-emerald-950 rounded-[10px] flex items-center justify-center">
-                  <Sprout className="w-5 h-5 text-emerald-400" />
-                </div>
+        {/* Top Header Row */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-8 border-b border-slate-800/80">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-violet-600 p-[1px]">
+              <div className="w-full h-full bg-navy-900 rounded-[11px] flex items-center justify-center">
+                <Box className="w-5 h-5 text-cyan-400" />
               </div>
-              <span className="text-xl font-display font-extrabold text-white">
-                Farm to Field <span className="bg-gradient-to-r from-emerald-400 to-amber-400 bg-clip-text text-transparent">Hub</span>
-              </span>
-            </Link>
+            </div>
+            <div>
+              <div className="font-space font-extrabold text-xl text-white">
+                AI <span className="gradient-text-cyan">POWER</span>
+              </div>
+              <p className="text-[10px] text-slate-400">BUILDING PLANNING, DESIGN & CONSTRUCTION INTELLIGENCE</p>
+            </div>
+          </div>
 
-            <p className="text-sm text-emerald-200/70 max-w-sm leading-relaxed">
-              Smart technology for smarter farming. Connecting farmers, crops, markets, and precision agricultural insights with AI-driven intelligence.
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-emerald-500/30 text-emerald-300 text-[11px]">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span>ALL AI NEURAL SYSTEMS OPERATIONAL</span>
+            </div>
+            <button
+              onClick={scrollToTop}
+              className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 text-slate-300 hover:text-white"
+              aria-label="Scroll to top"
+            >
+              <ArrowUp className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Links Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="space-y-3">
+            <div className="font-bold text-white uppercase text-xs">AI Platform</div>
+            <ul className="space-y-2 text-slate-400">
+              <li><a href="#hero" className="hover:text-cyan-300">Home Hero</a></li>
+              <li><a href="#solutions" className="hover:text-cyan-300">6 Core AI Solutions</a></li>
+              <li><a href="#3d-designs" className="hover:text-cyan-300">3D Architecture Showcase</a></li>
+              <li><a href="#project-planner" className="hover:text-cyan-300">AI Project Workspace</a></li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <div className="font-bold text-white uppercase text-xs">Intelligence</div>
+            <ul className="space-y-2 text-slate-400">
+              <li><a href="#intelligence" className="hover:text-cyan-300">Construction Tracking</a></li>
+              <li><a href="#about" className="hover:text-cyan-300">BIM Neural Engine</a></li>
+              <li><a href="#contact" className="hover:text-cyan-300">Project Consultation</a></li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <div className="font-bold text-white uppercase text-xs">Tech Stack</div>
+            <ul className="space-y-2 text-slate-400">
+              <li>Three.js / React Three Fiber</li>
+              <li>Spatial Neural Networks</li>
+              <li>Tailwind CSS & Glassmorphism</li>
+              <li>BIM IFC / DXF Exporters</li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <div className="font-bold text-white uppercase text-xs">Global Offices</div>
+            <p className="text-slate-400 leading-relaxed text-[11px]">
+              Austin, TX • London, UK • Singapore • Dubai, UAE
             </p>
-
-            <div className="pt-2 flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-                <Sparkles className="w-3 h-3 text-amber-400" />
-                Powered by Next-Gen AgriTech
-              </span>
-            </div>
           </div>
+        </div>
 
-          {/* Quick Nav Links */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-300/90">
-              Platform Features
-            </h4>
-            <ul className="space-y-2 text-sm text-emerald-100/70">
-              <li>
-                <Link to="/crop-advisor" className="hover:text-emerald-300 transition-colors flex items-center gap-1">
-                  Crop Advisor <ArrowUpRight className="w-3 h-3 opacity-60" />
-                </Link>
-              </li>
-              <li>
-                <Link to="/disease-detection" className="hover:text-emerald-300 transition-colors flex items-center gap-1">
-                  Disease Detection <ArrowUpRight className="w-3 h-3 opacity-60" />
-                </Link>
-              </li>
-              <li>
-                <Link to="/market-insights" className="hover:text-emerald-300 transition-colors flex items-center gap-1">
-                  Market Mandi Insights <ArrowUpRight className="w-3 h-3 opacity-60" />
-                </Link>
-              </li>
-              <li>
-                <Link to="/ask-ai" className="hover:text-emerald-300 transition-colors flex items-center gap-1">
-                  FarmMate AI Assistant <ArrowUpRight className="w-3 h-3 opacity-60" />
-                </Link>
-              </li>
-              <li>
-                <Link to="/robo" className="hover:text-emerald-300 transition-colors flex items-center gap-1">
-                  3D Cyber Robo <ArrowUpRight className="w-3 h-3 opacity-60" />
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Resources */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-300/90">
-              Resources & Insights
-            </h4>
-            <ul className="space-y-2 text-sm text-emerald-100/70">
-              <li>
-                <Link to="/community" className="hover:text-emerald-300 transition-colors">
-                  Farmer Community
-                </Link>
-              </li>
-              <li>
-                <a href="#weather" className="hover:text-emerald-300 transition-colors">
-                  Hyperlocal Weather
-                </a>
-              </li>
-              <li>
-                <a href="#features" className="hover:text-emerald-300 transition-colors">
-                  Soil Health Analytics
-                </a>
-              </li>
-              <li>
-                <a href="#features" className="hover:text-emerald-300 transition-colors">
-                  Precision Irrigation
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Creator & Credits Card */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400">
-              About the Creator
-            </h4>
-            <div className="p-4 rounded-2xl bg-emerald-900/40 border border-emerald-500/20 backdrop-blur space-y-2">
-              <p className="text-xs text-emerald-200/80">
-                Created & engineered by:
-              </p>
-              <p className="text-base font-bold text-white flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Anurag
-              </p>
-              <p className="text-xs text-emerald-300/70">
-                Dedicated to empowering Indian farmers through modern artificial intelligence and intuitive technology.
-              </p>
+        {/* Legal Disclaimer & Copyright */}
+        <div className="pt-8 border-t border-slate-800/80 space-y-4 text-[10px] text-slate-500">
+          <p className="leading-relaxed">
+            <strong>Civil Engineering Notice:</strong> AI POWER generates preliminary conceptual building layouts, 3D renderings, and material estimations. All outputs must be audited and stamped by a licensed civil or structural engineer prior to construction.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-slate-400">
+            <div>© {new Date().getFullYear()} AI POWER Platform. All rights reserved.</div>
+            <div className="flex gap-4">
+              <a href="#" className="hover:text-cyan-300">Privacy Policy</a>
+              <a href="#" className="hover:text-cyan-300">Terms of Service</a>
+              <a href="#" className="hover:text-cyan-300">Engineering Compliance</a>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-emerald-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-emerald-200/60">
-          <p>
-            © {new Date().getFullYear()} <span className="font-semibold text-emerald-200">Farm to Field Hub</span>. All rights reserved.
-          </p>
-          <p className="flex items-center gap-1 font-medium text-emerald-200">
-            Smart technology for smarter farming. · <span className="text-amber-400">Developed by Anurag</span>
-          </p>
-        </div>
       </div>
     </footer>
   );
